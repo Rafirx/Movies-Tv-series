@@ -641,3 +641,131 @@ nav {
         font-size: 1em;
     }
 }
+
+/* Player Modal Styles */
+.player-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.player-modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius);
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    animation: slideUp 0.3s ease-in-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close-player-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    font-size: 28px;
+    color: white;
+    cursor: pointer;
+    z-index: 2001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.close-player-btn:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.1);
+}
+
+.player-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+}
+
+.player-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.player-info {
+    padding: 30px;
+    color: var(--text-primary);
+}
+
+.player-info h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    color: var(--accent-color);
+}
+
+.player-info p {
+    font-size: 1em;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+/* Responsive design for player modal */
+@media (max-width: 768px) {
+    .player-modal-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .player-info {
+        padding: 20px;
+    }
+
+    .player-info h2 {
+        font-size: 1.4em;
+    }
+
+    .close-player-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 24px;
+    }
+}

@@ -1,46 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Movies & TV Series</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <!-- Navigation -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <nav>
-        <div class="logo">FLIX</div>
-        <div class="nav-controls">
-            <div class="filter-buttons">
-                <button class="nav-btn active" data-filter="all">All</button>
-                <button class="nav-btn" data-filter="movie">Movies</button>
-                <button class="nav-btn" data-filter="series">Series</button>
-            </div>
-            <div class="search-container">
-                <input 
-                    type="text" 
-                    id="searchInput" 
-                    placeholder="Search..."
-                    autocomplete="off"
-                >
-            </div>
+      <div class="logo">FLIX</div>
+      <div class="nav-controls">
+        <div class="filter-buttons">
+          <button class="nav-btn active" data-filter="all">All</button>
+          <button class="nav-btn" data-filter="movie">Movies</button>
+          <button class="nav-btn" data-filter="series">Series</button>
         </div>
+        <div class="search-container">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search..."
+            autocomplete="off"
+          />
+        </div>
+      </div>
     </nav>
 
-    <!-- Hero Section -->
     <div class="hero">
-        <div class="hero-carousel">
-            <div class="carousel-track" id="carouselTrack"></div>
-            <div class="carousel-overlay"></div>
-        </div>
-        <div class="hero-content"></div>
+      <div class="hero-carousel">
+        <div class="carousel-track" id="carouselTrack"></div>
+        <div class="carousel-overlay"></div>
+      </div>
+      <div class="hero-content"></div>
     </div>
 
-    <!-- Main Container -->
     <div class="container">
-        <div id="contentContainer"></div>
+      <div id="contentContainer"></div>
+    </div>
+    
+    <div id="playerModal" class="player-modal">
+      <div class="player-modal-content">
+        <button class="close-player-btn">&times;</button>
+        <div class="player-container">
+          <iframe
+            id="playerIframe"
+            class="player-iframe"
+            frameborder="0"
+            allowfullscreen
+            allow="autoplay"
+          ></iframe>
+        </div>
+        <div class="player-info">
+          <h2 id="playerTitle"></h2>
+          <p id="playerPlot"></p>
+        </div>
+      </div>
     </div>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

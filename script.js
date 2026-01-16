@@ -1,4 +1,3 @@
-// Global state
 let allData = [];
 let currentFilter = 'all';
 let searchQuery = '';
@@ -6,7 +5,6 @@ let heroData = null;
 let carouselInterval = null;
 let carouselIndex = 0;
 
-// Image fallback function - generates a placeholder with text
 function generateFallbackImage(title) {
     const canvas = document.createElement('canvas');
     canvas.width = 400;
@@ -24,7 +22,6 @@ function generateFallbackImage(title) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Wrap text
     const words = title.split(' ');
     const lines = [];
     let currentLine = '';
@@ -49,7 +46,6 @@ function generateFallbackImage(title) {
     return canvas.toDataURL();
 }
 
-// Initialize the application
 async function init() {
     try {
         const response = await fetch('Film.JSON');
@@ -75,9 +71,7 @@ async function init() {
 function setupHero() {
     const featuredItems = allData.filter(item => !item.ComingSoon);
     if (featuredItems.length > 0) {
-        // Initialize carousel with featured items
         initializeCarousel(featuredItems);
-        // Set initial hero data
         heroData = featuredItems[0];
         updateHero();
     }
@@ -88,14 +82,11 @@ function initializeCarousel(items) {
     const carouselTrack = document.getElementById('carouselTrack');
     carouselTrack.innerHTML = '';
     
-    // Create array of slides - ONLY first image from each item
     const allSlides = [];
     const slideData = [];
     
     items.forEach((item) => {
         let imageUrl = null;
-        
-        // Get first image from Images array, or fallback to Poster
         if (item.Images && item.Images.length > 0) {
             imageUrl = item.Images[0];
         } else if (item.Poster) {
@@ -104,8 +95,6 @@ function initializeCarousel(items) {
                 imageUrl = imageUrl.replace('http://', 'https://');
             }
         }
-        
-        // Only add if we have an image
         if (imageUrl) {
             allSlides.push(imageUrl);
             slideData.push({ title: item.Title, item: item });
@@ -118,17 +107,12 @@ function initializeCarousel(items) {
         slide.className = 'carousel-slide';
         
         if (imageUrl) {
-            // Set background image with fallback
             slide.style.backgroundImage = `url('${imageUrl}')`;
-            
-            // Add error handling for image loading
             const img = new Image();
             img.onload = function() {
-                // Image loaded successfully
                 slide.style.backgroundImage = `url('${imageUrl}')`;
             };
             img.onerror = function() {
-                // If image fails to load, use gradient fallback
                 slide.style.backgroundImage = `linear-gradient(135deg, #E50914 0%, #221f1f 100%)`;
             };
             img.src = imageUrl;
@@ -139,14 +123,11 @@ function initializeCarousel(items) {
         carouselTrack.appendChild(slide);
     });
     
-    // Clear existing interval
     if (carouselInterval) {
         clearInterval(carouselInterval);
     }
     
     carouselIndex = 0;
-    
-    // Store slide data globally
     window.allSlides = allSlides;
     window.slideData = slideData;
     
@@ -159,10 +140,7 @@ function initializeCarousel(items) {
     // Auto-rotate carousel every 3 seconds through all images
     carouselInterval = setInterval(() => {
         carouselIndex = (carouselIndex + 1) % allSlides.length;
-        
-        // Move the carousel track by translating it
         carouselTrack.style.transform = `translateX(-${carouselIndex * 100}%)`;
-        
         if (slideData[carouselIndex]) {
             heroData = slideData[carouselIndex].item;
             updateHero();
@@ -192,7 +170,6 @@ function updateHero() {
 
 // Setup all event listeners
 function setupEventListeners() {
-    // Filter buttons
     document.querySelectorAll('[data-filter]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
@@ -230,6 +207,43 @@ function setupEventListeners() {
             }
         }
     }, true);
+
+    // Card click to open player
+    document.addEventListener('click', (e) => {
+        const card = e.target.closest('.card');
+        if (card) {
+            const imdbId = card.getAttribute('data-imdb-id');
+            if (imdbId) {
+                const item = allData.find(i => i.imdbID === imdbId);
+                if (item) {
+                    openPlayerModal(item);
+                }
+            }
+        }
+    });
+
+    // Close modal with X button
+    const closeBtn = document.querySelector('.close-player-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closePlayerModal);
+    }
+
+    // Close modal when clicking outside the content
+    const playerModal = document.getElementById('playerModal');
+    if (playerModal) {
+        playerModal.addEventListener('click', (e) => {
+            if (e.target === playerModal) {
+                closePlayerModal();
+            }
+        });
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closePlayerModal();
+        }
+    });
 }
 
 // Filter data based on current filter and search query
@@ -238,7 +252,6 @@ function getFilteredData() {
         if (currentFilter !== 'all' && item.Type !== currentFilter) {
             return false;
         }
-
         if (searchQuery) {
             const searchableFields = [
                 item.Title || '',
@@ -259,8 +272,6 @@ function getFilteredData() {
 // Render content
 function render() {
     const filteredData = getFilteredData();
-    
-    // Separate into movies and series
     const movies = filteredData.filter(item => item.Type === 'movie');
     const series = filteredData.filter(item => item.Type === 'series');
     
@@ -268,7 +279,6 @@ function render() {
     let html = '';
     
     if (searchQuery) {
-        // Show search results
         if (filteredData.length === 0) {
             html = `
                 <div style="padding: 40px 50px;">
@@ -341,21 +351,13 @@ function render() {
 function createCard(item) {
     const isSeries = item.Type === 'series';
     const isComingSoon = item.ComingSoon === true;
-    
-    // Use Poster field - convert http to https if needed
     let posterUrl = item.Poster;
-    
-    // Convert HTTP to HTTPS for security
     if (posterUrl && posterUrl.startsWith('http://')) {
         posterUrl = posterUrl.replace('http://', 'https://');
     }
-    
-    // Fallback to first image if poster doesn't exist
     if (!posterUrl && item.Images && item.Images.length > 0) {
         posterUrl = item.Images[0];
     }
-    
-    // Generate fallback if no image URL
     let fallbackUrl = generateFallbackImage(item.Title);
     if (!posterUrl) {
         posterUrl = fallbackUrl;
@@ -380,7 +382,7 @@ function createCard(item) {
         : '';
 
     return `
-        <div class="card">
+        <div class="card" data-imdb-id="${item.imdbID}">
             <img 
                 src="${posterUrl}" 
                 alt="${escapeHtml(item.Title)}"
@@ -414,6 +416,43 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// Open player modal with movie/series data
+function openPlayerModal(item) {
+    const playerModal = document.getElementById('playerModal');
+    const playerIframe = document.getElementById('playerIframe');
+    const playerTitle = document.getElementById('playerTitle');
+    const playerPlot = document.getElementById('playerPlot');
+
+    if (!item.imdbID) {
+        alert('This content does not have an IMDb ID available for streaming.');
+        return;
+    }
+
+    // Build the embed URL - use imdbID as-is
+    const embedUrl = `https://www.vidking.net/embed/movie/${item.imdbID}?color=ff0000`;
+
+    console.log('Opening:', item.Title, 'with ID:', item.imdbID, 'URL:', embedUrl);
+
+    // Update modal content
+    playerTitle.textContent = escapeHtml(item.Title);
+    playerPlot.textContent = escapeHtml(item.Plot || 'No description available');
+    playerIframe.src = embedUrl;
+
+    // Show modal
+    playerModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+// Close player modal
+function closePlayerModal() {
+    const playerModal = document.getElementById('playerModal');
+    const playerIframe = document.getElementById('playerIframe');
+    
+    playerModal.style.display = 'none';
+    playerIframe.src = '';
+    document.body.style.overflow = 'auto';
 }
 
 // Display error message
